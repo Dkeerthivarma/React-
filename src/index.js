@@ -109,22 +109,22 @@ import reportWebVitals from './reportWebVitals';
 
 //ex-12 Conditions - if statements - React supports if statements but not inside JSX - put the if statements outside JSX and use ternary expression instead
 
-// const x=15;
-// let text = "Goodbye!";
-// if (x<10){
-//   text="Hello!";
-// }
+const x=15;
+let text = "Goodbye!";
+if (x<10){
+  text="Hello!";
+}
 
-// const myElement=<h1>{text}</h1>
-// const root=ReactDOM.createRoot(document.getElementById('root'));
-// root.render(myElement);
+const myElement=<h1>{text}</h1>
+const root=ReactDOM.createRoot(document.getElementById('root'));
+root.render(myElement);
 
 // ex-13 using ternary expressions
 
-const x=10;
-const myElement=<h1>{(x)<10? "Hello!" : "Goodbye!"}</h1>;
-const root= ReactDOM.createRoot(document.getElementById('root'));
-root.render(myElement);
+// const x=10;
+// const myElement=<h1>{(x)<10? "Hello!" : "Goodbye!"}</h1>;
+// const root= ReactDOM.createRoot(document.getElementById('root'));
+// root.render(myElement);
 
 //ex-14 
 
