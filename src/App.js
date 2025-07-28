@@ -1052,43 +1052,293 @@
 //if we want only color of the car to be updated, this would remove the brand, model and year
 //we can use javascript spread operator to help with this
 
-import { useState } from "react";
-import ReactDOM from "react-dom/client";
+// import { useState } from "react";
+// import ReactDOM from "react-dom/client";
 
-function Car(){
-    const [car, setCar] = useState({
-    brand: "Ford",
-    model: "Mustang",
-    year: "1964",
-    color: "red"
-  });
+// function Car(){
+//     const [car, setCar] = useState({
+//     brand: "Ford",
+//     model: "Mustang",
+//     year: "1964",
+//     color: "red"
+//   });
   
-  const updateColor=()=>{
-    setCar(previousState=>{
-        return{...previousState, color:"Blue"}
-    });
-  }
-  return (
-    <>
-      <h1>My {car.brand}</h1>
-      <p>
-        It is a {car.color} {car.model} from {car.year}.
-      </p>
-      <button
-        type="button"
-        onClick={updateColor}
-      >Blue</button>
-    </>
-  );
-}
-//because we need the current value of state, we pass a function into our setcar function. This function receives the previous value
-//we then return an object, spreading the previousState and overwriting only the color
-const root=ReactDOM.createRoot(document.getElementById('root'));
-root.render(<Car/>);
+//   const updateColor=()=>{
+//     setCar(previousState=>{
+//         return{...previousState, color:"Blue"}
+//     });
+//   }
+//   return (
+//     <>
+//       <h1>My {car.brand}</h1>
+//       <p>
+//         It is a {car.color} {car.model} from {car.year}.
+//       </p>
+//       <button
+//         type="button"
+//         onClick={updateColor}
+//       >Blue</button>
+//     </>
+//   );
+// }
+// //because we need the current value of state, we pass a function into our setcar function. This function receives the previous value
+// //we then return an object, spreading the previousState and overwriting only the color
+// const root=ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<Car/>);
 
 //REACT useEffect hook
 //the useeffect hook allows you to perfrom side effects in your components
 //some examples of side effects are: fetching data, directly updating the dom and timers
 //useEffect accepts two areguments, the second one is optional
 // useEffect(<function>, <dependency>)
+
+//timer as example
+
+// import { useState, useEffect } from "react";
+// import ReactDOM from "react-dom/client";
+
+// function Timer(){
+//   const[count, setCount]=useState(0);
+
+//   useEffect(()=>{
+//     setTimeout(() => {
+//       setCount((count)=>count+1);
+//     }, 1000);
+//   });
+
+//   return <h1>I've rendered {count} times!</h1>;
+// }
+
+// const root=ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<Timer/>);
+
+//it keeps counting eventhoudh it should only count once
+//useeffect runs on every render.That means that when the count changes, a render happnes, which then triggers another effect
+//this is not what we want. There are several ways to control when side effects run
+//we should always include the second parameter which accepts an array. We can optionally pass dependencies to useeffect in this array
+
+//1. No dependency passed:
+
+// useEffect(() => {
+//   //Runs on every render
+// });
+
+//2. An empty array:
+
+// useEffect(() => {
+//   //Runs only on the first render
+// }, []);
+
+// 3. Props or state values:
+
+// useEffect(() => {
+//   //Runs on the first render
+//   //And any time any dependency value changes
+// }, [prop, state]);
+
+//to fix this, lets run this effect on the intial render
+
+// import { useState, useEffect } from "react";
+// import ReactDOM from "react-dom/client";
+
+// function Timer() {
+//   const [count, setCount] = useState(0);
+
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setCount((count) => count + 1);
+//     }, 1000);
+//   }, []); // <- add empty brackets here
+
+//   return <h1>I've rendered {count} times!</h1>;
+// }
+
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<Timer />);
+
+
+//Here is an example of useeffect hook that is dependence on a variable. if the count variable update, the effect will run again
+
+// import { useState, useEffect } from "react";
+// import ReactDOM from "react-dom/client";
+
+// function Counter(){
+//   const[count, setCount]=useState(0);
+//   const[calculation, setCalculation]=useState(0);
+
+//   useEffect(()=>{
+//     setCalculation(()=>count*2);
+//   },[count]);
+
+//   return(
+//     <>
+//     <p>Count: {count}</p>
+//     <button onClick={()=>setCount((c)=>c+1)}>+</button>
+//     <p>Calculation:{calculation}</p>
+//     </>
+//   );
+// }
+
+// const root=ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<Counter/>);
+
+
+//effect cleanup
+//some effects require cleanup to reduce memory leaks
+//timeouts, subscriptions, event listeners and other effects that are no longer needed should be disposed
+//we do this by including a return function at the end of the useEffect Hook
+
+// import { getElementError } from "@testing-library/dom";
+// import { useState, useEffect } from "react";
+// import ReactDOM from "react-dom/client";
+
+// function Timer(){
+//   const[count, setCount]=useState(0);
+
+//   useEffect(()=>{
+//     let timer=setTimeout(()=>{
+//       setCount((count)=>count+1);
+//     }, 1000);
+
+//     return ()=>clearTimeout(timer)
+//   },[]);
+
+//   return <h1>I've rendered {count} times!</h1>
+// }
+
+// const root=ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<Timer/>);
+
+//React Context
+//it is a way to manage state globally
+//it can be used together with the usestate to share the state between deeply nested components more easily than with useState alone
+
+//The Problem--------------***************************
+//State should be held by the highest parent component in the stack that requires access to the state
+//to illustrate, we have many nested components. The component at the top and bottom of the stack need access to the state
+//to do this without context, we will need to pass the state as "props" through each nested component. This is called "prop drilling"
+
+//Passing props through nested components
+
+// import { useState } from "react";
+// import ReactDOM from "react-dom/client";
+
+// function Component1(){
+//   const[user, setUser]=useState("Jesse Hall");
+
+//   return(
+//     <>
+//     <h1>{`Hello ${user}`}</h1>
+//     <Component2 user={user}/>
+//     </>
+//   );
+// }
+
+// function Component2({user}){
+//   return(
+//     <>
+//     <h1>Component 2</h1>
+//     <Component3 user={user}/>
+//     </>
+//   );
+// }
+
+// function Component3({user}){
+//   return(
+//     <>
+//     <h1>Component 3</h1>
+//     <Component4 user={user}/>
+//     </>
+//   );
+// }
+
+// function Component4({user}){
+//   return(
+//     <>
+//     <h1>Component 4</h1>
+//     <Component5 user={user}/>
+//     </>
+//   );
+// }
+
+// function Component5({user}){
+//   return(
+//     <>
+//     <h1>Component 5</h1>
+//     <h2>{`Hello ${user} again!`}</h2>
+//     </>
+//   );
+// }
+
+// const root=ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<Component1/>);
+
+//The Solution--------------------******************************
+//The solution is to create context
+//import createContext
+
+import { useState, createContext, useContext } from "react";
+import ReactDOM from "react-dom/client";
+
+const UserContext=createContext()
+//next we will use the context provider to wrap the tree of components that need the state context
+//context provider - wrap child components in the context provider and supply the state value
+
+function Component1(){
+  const[user, setUser]=useState("Jessie Hall");
+
+  return(
+    <UserContext.Provider value={user}>
+      <h1>{`Hello ${user}!`}</h1>
+      <Component2 user={user}/>
+    </UserContext.Provider>
+  );
+}
+
+function Component2(){
+  return(
+  <>
+  <h1>Component 2</h1>
+  <Component3/>
+  </>);
+}
+function Component3(){
+  return(
+    <>
+    <h1>Component 3</h1>
+    <Component4/>
+    </>
+  );
+}
+
+function Component4(){
+  return(
+    <>
+    <h1>Component 4</h1>
+    <Component5/>
+    </>
+  );
+}
+
+//Use the useContext hook
+//in order to use teh context in child component, we need to access it using useContext hook
+//include useContext in the import statement
+
+//import{useState, createContext, useContext} from "react";
+function Component5(){
+  const user =useContext(UserContext);
+
+  return(
+    <>
+    <h1>Component 5</h1>
+    <h2>{`Hello ${user} again!`}</h2>
+    </>
+  );
+}
+
+const root=ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Component1/>);
+
+//solution done--------------------------------**********************
+
 
